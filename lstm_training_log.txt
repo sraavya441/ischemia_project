@@ -1,0 +1,35 @@
+Using device: cpu
+Loading ecg_dataset_72k_balanced.csv (Full Dataset)...
+Dataset shape: (72162, 300)
+
+Starting Training...
+Epoch [1/10], Loss: 0.7019 - Time: 786.05s
+Epoch [2/10], Loss: 0.6776 - Time: 1157.78s
+Epoch [3/10], Loss: 0.4557 - Time: 2417.54s
+Epoch [4/10], Loss: 0.1921 - Time: 2452.80s
+Epoch [5/10], Loss: 0.1729 - Time: 2477.49s
+Epoch [6/10], Loss: 0.0981 - Time: 5471.36s
+Epoch [7/10], Loss: 0.0839 - Time: 5129.51s
+Epoch [8/10], Loss: 0.0730 - Time: 2858.71s
+Epoch [9/10], Loss: 0.0693 - Time: 2906.87s
+Epoch [10/10], Loss: 0.0639 - Time: 3347.42s
+
+Model saved to lstm_model.pth!
+
+Evaluating Model in batches to prevent memory crash...
+Accuracy:  0.9787
+Precision: 0.9791
+Recall:    0.9787
+F1 Score:  0.9787
+
+Detailed Classification Report:
+              precision    recall  f1-score   support
+
+         0.0       0.96      1.00      0.98      4727
+         1.0       1.00      0.98      0.99      4797
+         2.0       0.98      0.96      0.97      4909
+
+    accuracy                           0.98     14433
+   macro avg       0.98      0.98      0.98     14433
+weighted avg       0.98      0.98      0.98     14433
+

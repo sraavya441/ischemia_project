@@ -1,0 +1,39 @@
+# Chronological Development of the CardioVision System
+
+This document outlines every detailed step of the project in the exact chronological order in which it was developed and implemented.
+
+### Phase 1: Initial Conceptualization & Baseline UI
+* **Project Inception**: Defined the core objective: building a real-time, clinical-grade diagnostic system to classify cardiac ischemia.
+* **Initial Dashboard Development**: Built the baseline Streamlit user interface (`dashboard.py`), specifically implementing a premium, dark-mode aesthetic suitable for clinical environments.
+* **Static Data Analysis Features**: Implemented a manual row-selector feature, allowing doctors to navigate and analyze individual patient records from an initial, small-scale CSV dataset.
+* **Early SHAP Integration**: Integrated SHapley Additive exPlanations (SHAP) early in the development cycle to ensure any future AI predictions could be visually explained to clinicians.
+
+### Phase 2: Hardware Integration & Real-Time Data Pipeline
+* **ESP32 Microcontroller Setup**: Configured the ESP32 hardware sensor to read analog, live ECG signals directly from patients.
+* **Serial Data Acquisition**: Developed Python scripts (`read_usb_serial.py`) to actively capture the data stream via a USB serial connection.
+* **State Synchronization System**: Created a local file-based state management system (`latest_signal.json`, `serial_status.txt`) to seamlessly bridge the hardware data stream with the Streamlit frontend.
+* **Flickering UI Resolution**: Encountered severe dashboard flashing/flickering. Debugged and resolved these conflicts between the real-time data ingestion loop and Streamlit's rendering mechanism (`st.rerun()`), ensuring a stable display.
+
+### Phase 3: Advanced Signal Processing Pipeline
+* **Wavelet Denoising Implementation**: Developed the core `pipeline.py` using PyWavelets to perform a Discrete Wavelet Transform (DWT) utilizing the 'sym8' wavelet.
+* **Adaptive Soft-Thresholding**: Applied a kneedle-based adaptive soft-thresholding technique to the detail coefficients to mathematically suppress high-frequency muscle and powerline noise.
+* **Baseline Preservation Strategy**: Explicitly coded the pipeline to preserve the `cA5` approximation coefficient, keeping the crucial clinical baseline wander entirely intact.
+* **Morphological Feature Extraction**: Integrated the `neurokit2` library to automatically delineate the cleaned ECG waves and extract tabular clinical features (e.g., QRS duration, ST deviation, T-wave inversion).
+
+### Phase 4: Machine Learning Engine & Data Scaling
+* **Initial ML Prototyping**: Trained baseline Random Forest and XGBoost models on a very small initial subset of 1,000 extracted ECG features.
+* **Massive Data Scaling**: Transitioned the entire project infrastructure to handle a massive 72,000-row clinical dataset (`ecg_dataset_72k_balanced.csv`) to dramatically improve model generalization.
+* **Data Augmentation (GANs)**: Utilized Generative Adversarial Networks (`train_gan.py`) to synthesize artificial data and perfectly balance underrepresented cardiac disease classes.
+* **Batch Processing Scripts**: Wrote custom memory-efficient batching scripts (`process_massive_dataset.py`, `generate_balanced_dataset.py`) to process the massive 72k dataset without crashing the local system's RAM.
+
+### Phase 5: Deep Learning Integration & OOM Debugging
+* **LSTM Architecture Design**: Built a Bidirectional Long Short-Term Memory (LSTM) deep learning neural network using PyTorch (`train_lstm.py`). Unlike the ML models, this was designed to analyze the raw, sequential time-series data.
+* **Memory Optimization (OOM Error)**: Encountered severe "Out of Memory" (OOM) crashes during the final evaluation phase of the LSTM training on the 72k dataset.
+* **Refactoring Training Pipeline**: Refactored the LSTM evaluation loops to process the test dataset in smaller, memory-efficient batches. This successfully resolved the crash and generated the final Accuracy, Precision, Recall, and F1 metrics.
+* **Model Serialization**: Saved the finalized deep learning weights securely into `lstm_model.pth`.
+
+### Phase 6: Final Dual-Engine Consensus & Deployment
+* **Dual-Engine Integration**: Fused the ML Engine (Random Forest/XGBoost) and the DL Engine (Bidirectional LSTM) into a single overarching diagnostic system.
+* **Soft-Voting Mechanism**: Implemented a consensus logic algorithm where both engines independently vote on the final diagnosis.
+* **Discrepancy Alert System**: Programmed the dashboard to visually alert clinicians with a warning banner whenever the two AI engines disagreed, ensuring a strict "human-in-the-loop" safety protocol.
+* **Final System Validation**: Performed end-to-end testing, validating that the ESP32 hardware seamlessly fed data through the denoising pipeline, into both AI engines, and accurately displayed the unified result alongside the SHAP explanation live on the dashboard.

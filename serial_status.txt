@@ -1,0 +1,1 @@
+Connected successfully to COM3 at 9600 baud!
